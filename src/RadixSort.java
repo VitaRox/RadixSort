@@ -35,9 +35,9 @@ public class RadixSort<i> {
      */
     public static int getMax(int[] input) {
         int max = 0;
-        for (int i = 0; i < input.length; i++) {
+        for (int value : input) {
             // Create temp variable to store Stringified version of current element in 'input';
-            String temp = Integer.toString(input[i]);
+            String temp = Integer.toString(value);
             // If exceeds the current 'max length', update this maximum value;
             if (temp.length() > max) {
                 max = temp.length();
@@ -56,40 +56,41 @@ public class RadixSort<i> {
      * @param input, an array of ints to be sorted in ascending order;
      */
     public static void radixSort(int[] input) {
+        // Initialize our buckets array with LinkedLists for each Queue;
+        initBuckets();
         // For the number of digits in the longest number in 'input';
-        for (int i = getMax(input); i >= 0; i--) {
+        for (int i = 0; i < getMax(input); i++) {
             // For each number in the list we are sorting;
             for (int elem : input) {
                 // Create temp variable that is current element cast to String type;
                 String temp = Integer.toString(elem);
-                // Declare/initialize variable representing the char version of current digit to be examined;
+                // Declare/initialize variable representing the current digit to be examined;
                 int exam = 0;
-                // If equal to maxSize:
-                if (temp.length() == maxSize) {
-                    // Get current digit as a char of String 'temp', then convert back to int;
-                    exam = Character.getNumericValue(temp.charAt(i));
-                    // Else: the number has fewer digits than the biggest number in the sort list,
-                    // treat it as a zero;
-                    // For each bucket;
-                    for (int idx = 0; idx < 10; idx++) {
-                        // If the digit being examined currently corresponds to the index of the bucket, add it;
-                        if (exam == idx) {
-                            buckets[idx].add(elem);
-                        }
-                    }
+                
+                // If current digit place inspected is less than maxSize, add to the "0" index bucket;
+                if (i < temp.length()) {
+                    exam = Character.getNumericValue(temp.charAt(temp.length() - 1 - i));
+                    buckets[exam].add(elem);
+                // Else: get current digit as a char of String 'temp', then convert back to int;
+                // Add to bucket to which elem corresponds to its index, which equals 'exam', the
+                // digit of element input[i] we are inspecting;
+                } else {
+                    buckets[0].add(elem);
                 }
             }
             /*
              Put the items from the buckets back into the array in the order they
              are come across;
-             For the number of elements in our input array, 'input'..
+             For the number of elements in our input array, 'input'..,
             */
-            for (int j = 0; j < input.length; j++) {
-                // For each of the 10 buckets;
+            for (int j = 0; j < input.length; ) {
+                // For each of the 10 buckets...
                 for (int k = 0; k < 10; k++) {
-                    // Dump this bucket's contents, in order, back into next element of 'input';
-                    while (!buckets[j].isEmpty()) {
+                    // ....dump this bucket's contents, in order, back into next element of 'input';
+                    while (!buckets[k].isEmpty()) {
                         input[j] = buckets[k].remove();
+                        // Only increment to next array position if something added to it;
+                        j++;
                     }
                 }
             }
@@ -104,11 +105,11 @@ public class RadixSort<i> {
      * @param input, the array to be printed
      */
     public static void printArray(int[] input) {
-        System.out.println("{ ");
+        System.out.print("{ ");
         for (int i = 0; i < input.length - 1; i++) {
-            System.out.println(input[i] + ", ");
+            System.out.print(input[i] + ", ");
         }
-        System.out.println(input[input.length - 1] + " }");
+        System.out.print(input[input.length - 1] + " }");
     }
     
     /**
@@ -117,11 +118,20 @@ public class RadixSort<i> {
      * @param args the command-line arguments;
      */
     public static void main(String[] args) {
+        // Create our test array, 'list';
         int[] list =  {7843, 4568, 8765, 6543, 7865, 4532, 9987, 3241,6589, 6622, 1211};
-        
+        System.out.println("Before sorting with radix sort: ");
+        printArray(list);
+        // Insert line break for readability;
+        System.out.println();
+        // Initialize our array of "buckets", or LinkedList-implemented Queues;
+//        initBuckets();
+        // Sort our input array, 'list';
+        radixSort(list);
+        System.out.println("After sorting with radix sort: ");
+        // Show the results in an attractively-printed fashion;
+        printArray(list);
     }
-
-
-
+    
 
 }
